@@ -45,7 +45,7 @@ const startHttpServer = async (port, callback) => {
         request.on('end', async() => {
             utils.log("HttpServer", `http request received`);
             if (callback){
-                await callback({ path: request.url, headers: request.headers, data: body }, (headers, contentType, statusCode, data) => {
+                await callback({ path: request.url, headers: request.headers, data: body }, ( {contentType, statusCode, data}) => {
                     response.setHeader('Access-Control-Allow-Origin', '*');
                     response.setHeader("Content-Type", contentType);
                     const responseData = new Buffer(data);
