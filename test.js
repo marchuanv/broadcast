@@ -11,7 +11,7 @@ const messagebus = require("./messagebus.js");
     subscription.onreceive = (receivedMsg) => {
         console.log("received message: ", receivedMsg);
     };
-    await messagebus.broadcast({ messageId: "test", data: '<html><head></head><body>FIRST</body></html>' });
+    await messagebus.publish({ messageId: "test", data: '<html><head></head><body>FIRST</body></html>' });
 
 })().catch((err)=>{
     console.log(err);

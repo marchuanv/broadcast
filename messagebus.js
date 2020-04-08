@@ -5,7 +5,7 @@ const http = require('http');
 let subscriptions = [];
 let lastIntervalId = 0;
 
-const broadcast = ({ messageId, data } ) => {
+const publish = ({ messageId, data } ) => {
     return new Promise(async(resolve, reject) => {
         utils.log("MessageBus","-----------------------------------------------------------");
         utils.log("MessageBus",`subscription count: ${subscriptions.length}`);
@@ -92,4 +92,4 @@ const subscribe = ( { messageId, urlPath, destinationHost, destinationPort, cont
     return subscription;
 };
 
-module.exports = { subscribe, start, broadcast };
+module.exports = { subscribe, start, publish };
