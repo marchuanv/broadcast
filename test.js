@@ -4,14 +4,12 @@ const messagebus = require("./messagebus.js");
     const subscription = messagebus.subscribe( { 
         messageId: "test", 
         urlPath:"/test", 
-        destinationHost: "localhost", 
-        destinationPort: 3000, 
         contentType: "text/html" 
     });
     subscription.onreceive = (receivedMsg) => {
         console.log("received message: ", receivedMsg);
     };
-    await messagebus.publish({ messageId: "test", data: '<html><head></head><body>FIRST</body></html>' });
+    await messagebus.publish({ messageId: "test", host: "localhost", port: 3000, data: '<html><head></head><body>FIRST</body></html>' });
 
 })().catch((err)=>{
     console.log(err);

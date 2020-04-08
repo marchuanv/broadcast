@@ -5,7 +5,7 @@ const http = require('http');
 let subscriptions = [];
 let lastIntervalId = 0;
 
-const publish = ({ messageId, data } ) => {
+const publish = ({ messageId, host, port, data } ) => {
     return new Promise(async(resolve, reject) => {
         utils.log("MessageBus","-----------------------------------------------------------");
         utils.log("MessageBus",`subscription count: ${subscriptions.length}`);
@@ -14,8 +14,8 @@ const publish = ({ messageId, data } ) => {
         const subscription = subscriptions.find(x=>x.id === messageId);
         if (subscription){
             const request = http.request({ 
-                host: subscription.host, 
-                port: subscription.port, 
+                host, 
+                port, 
                 path: subscription.path, 
                 method: "POST",
                 headers: {
@@ -74,16 +74,14 @@ const start = async ( { port }) => {
     });
 };
 
-const subscribe = ( { messageId, urlPath, destinationHost, destinationPort, contentType }) => {
+const subscribe = ( { messageId, urlPath, contentType }) => {
     utils.log("MessageBus",`subscribing to ${messageId} messages`);
     subscriptions = subscriptions.filter(x=>x.id !== messageId);
     const subscription = { 
         id: messageId, 
         path: urlPath, 
         token: null, 
-        publickey: null, 
-        host: destinationHost, 
-        port: destinationPort, 
+        publickey: null,
         contentType,
         onreceive: async () => { throw new Error("onreceive callback is unhandled"); },
         data: null
