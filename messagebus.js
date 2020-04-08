@@ -13,6 +13,7 @@ const broadcast = ({ messageId, data } ) => {
         const dataToSend = typeof data === "object" ? utils.getJSONString(data) : data;
         const subscription = subscriptions.find(x=>x.id === messageId);
         if (subscription){
+            subscription.data = dataToSend;
             const request = http.request({ 
                 host: subscription.host, 
                 port: subscription.port, 
@@ -44,7 +45,7 @@ const broadcast = ({ messageId, data } ) => {
     });
 };
 const start = async ( { port }) => {
-    await component.startHttpServer(port, ({ path, headers, data }, reply) => {
+    await component.startHttpServer(port, async ({ path, headers, data }, reply) => {
         utils.log("MessageBus","-----------------------------------------------------------");
         utils.log("MessageBus",`subscription count: ${subscriptions.length}`);
         utils.log("MessageBus",`message received, headers: ${utils.getJSONString(headers)}`);
@@ -53,12 +54,17 @@ const start = async ( { port }) => {
         let receivedData = utils.getJSONObject(data) || data;
         let subscription = subscriptions.find(x => x.path === path);
         if (subscription){
+            
+            utils.log("MessageBus",`responding to subscripber`);
+
             subscription.token = token;
             subscription.publickey = publickey;
-            utils.log("MessageBus",`responding to subscripber`);
-            const dataToSend = subscription.callback(receivedData);
-            if (dataToSend){
-                reply({ contentType: subscription.contentType, statusCode: 200, data: dataToSend});
+            
+            subscription.data = receivedData || subscription.data;
+            await subscription.onreceive(subscription.data);
+
+            if (subscription.data){
+                reply({ contentType: subscription.contentType, statusCode: 200, data: subscription.data});
             } else {
                 reply({ contentType: "text/plain", statusCode: 200, data: `subscriber did not respond with any data`});
             }
@@ -69,10 +75,10 @@ const start = async ( { port }) => {
     });
 };
 
-const subscribe = ( { messageId, urlPath, destinationHost, destinationPort, contentType }, callback) => {
+const subscribe = ( { messageId, urlPath, destinationHost, destinationPort, contentType }) => {
     utils.log("MessageBus",`subscribing to ${messageId} messages`);
     subscriptions = subscriptions.filter(x=>x.id !== messageId);
-    subscriptions.push({ 
+    const subscription = { 
         id: messageId, 
         path: urlPath, 
         token: null, 
@@ -80,8 +86,11 @@ const subscribe = ( { messageId, urlPath, destinationHost, destinationPort, cont
         host: destinationHost, 
         port: destinationPort, 
         contentType,
-        callback
-    });
+        onreceive: async () => { throw new Error("onreceive callback is unhandled"); },
+        data: null
+    };
+    subscriptions.push(subscription);
+    return subscription;
 };
 
 module.exports = { subscribe, start, broadcast };
