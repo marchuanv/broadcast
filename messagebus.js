@@ -5,7 +5,7 @@ const http = require('http');
 let subscriptions = [];
 let lastIntervalId = 0;
 
-const send = ({ messageId, data } ) => {
+const broadcast = ({ messageId, data } ) => {
     return new Promise(async(resolve, reject) => {
         utils.log("MessageBus","-----------------------------------------------------------");
         utils.log("MessageBus",`subscription count: ${subscriptions.length}`);
@@ -73,9 +73,19 @@ const start = async ( { port }) => {
     });
 };
 
-const subscribe = ( { messageId, urlPath, host, port, contentType }) => {
+const subscribe = ( { messageId, urlPath, destinationHost, destinationPort, contentType }) => {
     subscriptions = subscriptions.filter(x=>x.id !== messageId);
-    subscriptions.push({ id: messageId, path: urlPath, dataToSend: null, dataReceived: null, token: null, publickey: null, host, port, contentType });
+    subscriptions.push({ 
+        id: messageId, 
+        path: urlPath, 
+        dataToSend: null, 
+        dataReceived: null, 
+        token: null, 
+        publickey: null, 
+        host: destinationHost, 
+        port: destinationPort, 
+        contentType
+    });
 };
 
 const receive = ({ messageId }) => {
@@ -94,4 +104,4 @@ const receive = ({ messageId }) => {
     });
 };
 
-module.exports = { subscribe, start, send, receive };
+module.exports = { subscribe, start, broadcast, receive };
