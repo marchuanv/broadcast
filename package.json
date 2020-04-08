@@ -1,22 +1,22 @@
 {
-  "name": "messaging",
+  "name": "messagebus",
   "version": "1.0.0",
   "description": "messagebus for sending and receiving messages",
-  "main": "messaging.js",
+  "main": "messagebus.js",
   "scripts": {
-    "pretest": "npm install .",
+    "pretest": "npm install",
     "test": "node test.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/marchuanv/messaging.git"
+    "url": "git+https://github.com/marchuanv/messagebus.git"
   },
   "author": "Marchuan Van Der Merwe",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/marchuanv/messaging/issues"
+    "url": "https://github.com/marchuanv/messagebus/issues"
   },
-  "homepage": "https://github.com/marchuanv/messaging#readme",
+  "homepage": "https://github.com/marchuanv/messagebus#readme",
   "dependencies": {
     "component": "git+https://github.com/marchuanv/component.git"
   }

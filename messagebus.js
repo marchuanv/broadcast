@@ -13,7 +13,6 @@ const broadcast = ({ messageId, data } ) => {
         const dataToSend = typeof data === "object" ? utils.getJSONString(data) : data;
         const subscription = subscriptions.find(x=>x.id === messageId);
         if (subscription){
-            subscription.dataToSend = dataToSend;
             const request = http.request({ 
                 host: subscription.host, 
                 port: subscription.port, 
@@ -30,7 +29,7 @@ const broadcast = ({ messageId, data } ) => {
                     rawData += chunk;
                 });
                 response.on('end', () => {
-                    const responseData = utils.getJSONObject(rawData);
+                    const responseData = utils.getJSONObject(rawData) || rawData;
                     resolve(responseData);
                 });
             });
@@ -54,18 +53,15 @@ const start = async ( { port }) => {
         let receivedData = utils.getJSONObject(data) || data;
         let subscription = subscriptions.find(x => x.path === path);
         if (subscription){
-            utils.log("MessageBus",`updating subscription, received data: `, receivedData);
             subscription.token = token;
             subscription.publickey = publickey;
-            subscription.dataReceived = receivedData;
-            clearInterval(lastIntervalId);
-            lastIntervalId = setInterval(() => {
-                let sub = subscriptions.find(x => x.path === path);
-                if (sub.dataToSend){
-                    clearInterval(lastIntervalId);
-                    reply({ contentType: sub.contentType, statusCode: 200, data: sub.dataToSend });
-                }
-            },1000);
+            utils.log("MessageBus",`responding to subscripber`);
+            const dataToSend = subscription.callback(receivedData);
+            if (dataToSend){
+                reply({ contentType: subscription.contentType, statusCode: 200, data: dataToSend});
+            } else {
+                reply({ contentType: "text/plain", statusCode: 200, data: `subscriber did not respond with any data`});
+            }
         } else {
             reply({ contentType: "text/plain", statusCode: 404, data: `no subscribers for ${headers.host}${path}`});
         }
@@ -73,35 +69,19 @@ const start = async ( { port }) => {
     });
 };
 
-const subscribe = ( { messageId, urlPath, destinationHost, destinationPort, contentType }) => {
+const subscribe = ( { messageId, urlPath, destinationHost, destinationPort, contentType }, callback) => {
+    utils.log("MessageBus",`subscribing to ${messageId} messages`);
     subscriptions = subscriptions.filter(x=>x.id !== messageId);
     subscriptions.push({ 
         id: messageId, 
         path: urlPath, 
-        dataToSend: null, 
-        dataReceived: null, 
         token: null, 
         publickey: null, 
         host: destinationHost, 
         port: destinationPort, 
-        contentType
+        contentType,
+        callback
     });
 };
 
-const receive = ({ messageId }) => {
-    return new Promise((resolve, reject) => {
-        const subscription = subscriptions.find(x=>x.id === messageId);
-        if (subscription){
-            const intervalId = setInterval(() => {
-                if (subscription.dataReceived){
-                    clearInterval(intervalId);
-                    resolve(subscription.dataReceived);
-                }
-            },1000);
-        } else {
-            reject(`no subscription found for ${messageId}`);
-        }
-    });
-};
-
-module.exports = { subscribe, start, broadcast, receive };
+module.exports = { subscribe, start, broadcast };
