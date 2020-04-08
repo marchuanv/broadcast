@@ -1,23 +1,23 @@
 {
-  "name": "messagebus",
+  "name": "broadcast",
   "version": "1.0.0",
-  "description": "messagebus for sending and receiving messages",
-  "main": "messagebus.js",
+  "description": "broadcast messages over channels",
+  "main": "broadcast.js",
   "scripts": {
-    "pretest": "npm install",
-    "test": "node test.js"
+    "prestart": "npm update",
+    "start": "node broadcast.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/marchuanv/messagebus.git"
+    "url": "git+https://github.com/marchuanv/broadcast.git"
   },
   "author": "Marchuan Van Der Merwe",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/marchuanv/messagebus/issues"
+    "url": "https://github.com/marchuanv/broadcast/issues"
   },
-  "homepage": "https://github.com/marchuanv/messagebus#readme",
+  "homepage": "https://github.com/marchuanv/broadcast#readme",
   "dependencies": {
-    "component": "git+https://github.com/marchuanv/component.git"
+    "messagebus": "git+https://github.com/marchuanv/messagebus.git"
   }
 }
