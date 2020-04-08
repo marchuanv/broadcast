@@ -13,7 +13,6 @@ const broadcast = ({ messageId, data } ) => {
         const dataToSend = typeof data === "object" ? utils.getJSONString(data) : data;
         const subscription = subscriptions.find(x=>x.id === messageId);
         if (subscription){
-            subscription.data = dataToSend;
             const request = http.request({ 
                 host: subscription.host, 
                 port: subscription.port, 
