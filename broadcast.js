@@ -6,7 +6,7 @@ const subscription = messagebus.subscribe( { path: "/broadcast", contentType: "a
 subscription.onreceive = async (broadcastMessage) => {
     utils.log("Broadcast","------------------------------------< BROADCAST RECEIVED START >----------------------------------------\r\n");
     const broadSub = messagebus.subscribe( { path: broadcastMessage.path, contentType: broadcastMessage.contentType });
-    broadSub.onreceive = () => {};
+    broadSub.onreceive = () => { utils.log("Broadcast",`server will not handle messages for ${broadSub.path}, refer to the component handle these messages`);};
     for (const subscriber of broadcastMessage.subscribers){
         utils.log("Broadcast",`broadcasting message to ${subscriber.host}:${subscriber.port}${broadcastMessage.path}`);
         await messagebus.publish({ path: broadcastMessage.path, host: subscriber.host, port: subscriber.port, data: broadcastMessage.data });
