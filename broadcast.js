@@ -1,7 +1,6 @@
 const messagebus = require("messagebus");
 const utils = require("utils");
 
-messagebus.start( {port: process.env.PORT || 3000});
 const subscription = messagebus.subscribe( { path: "/broadcast", contentType: "application/json" });
 subscription.onreceive = async (broadcastMessage) => {
     utils.log("Broadcast","------------------------------------< BROADCAST RECEIVED START >----------------------------------------\r\n");
