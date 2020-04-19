@@ -4,7 +4,7 @@
   "description": "broadcast messages over channels",
   "main": "broadcast.js",
   "scripts": {
-    "prestart": "npm install --force",
+    "prestart": "rm -r node_modules && npm install",
     "start": "node broadcast.js"
   },
   "repository": {
