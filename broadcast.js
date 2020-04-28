@@ -1,7 +1,7 @@
 const messagebus = require("messagebus");
 const utils = require("utils");
 const host = process.env.HOST || "localhost";
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 const broadcastPath = "/broadcast";
 const registerPath = "/register";
 const contentType = "application/json";
@@ -30,6 +30,11 @@ messagebus.subscribe( { host, port, path: broadcastPath, contentType }).callback
 
 messagebus.subscribe( { host, port, path: registerPath, contentType }).callback = async({ host, port, path }) => {
     utils.log("Broadcast Register","------------------------------------< BROADCAST RECEIVED START >----------------------------------------\r\n");
+    if (!host || !port || !path){
+        const message = "failed to register request, host, port and path is not in the message.";
+        utils.log("Broadcast", message);
+        throw new Error(message);
+    }
     services =  services.filter(s => s.host !== host && s.port !== port && s.path !== path);
     const url = `${host}:${port}${path}`;
     utils.log("Broadcast Register",`adding ${url} to the list of known services`);
