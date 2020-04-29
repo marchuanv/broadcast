@@ -10,7 +10,7 @@ const passphrase = "secure1";
 let services = [];
 
 messagebus.subscribe( { host, port, path: broadcastPath, contentType }).callback = async({ path, contentType, content }) => {
-    utils.log("Broadcast","------------------------------------< BROADCAST RECEIVED START >----------------------------------------\r\n");
+    utils.log("Broadcast","------------------------------------< BROADCAST START >----------------------------------------\r\n");
     for (const service of services.filter(s => s.path === path)){
         const url = `${service.host}:${service.port}${service.path}`;
         utils.log("Broadcast",`publishing message to ${url}`);
@@ -24,12 +24,12 @@ messagebus.subscribe( { host, port, path: broadcastPath, contentType }).callback
             content
         });
     };
-    utils.log("Broadcast","------------------------------------< BROADCAST RECEIVED END >----------------------------------------\r\n");
+    utils.log("Broadcast","------------------------------------< BROADCAST END >----------------------------------------\r\n");
     return `all remote services that subscribe to ${path} have been notified.`;
 };
 
 messagebus.subscribe( { host, port, path: registerPath, contentType }).callback = async({ host, port, path }) => {
-    utils.log("Broadcast Register","------------------------------------< BROADCAST RECEIVED START >----------------------------------------\r\n");
+    utils.log("Broadcast Register","------------------------------------< BROADCAST REGISTER START >----------------------------------------\r\n");
     if (!host || !port || !path){
         const message = "failed to register request, host, port and path is not in the message.";
         utils.log("Broadcast", message);
@@ -39,6 +39,6 @@ messagebus.subscribe( { host, port, path: registerPath, contentType }).callback 
     const url = `${host}:${port}${path}`;
     utils.log("Broadcast Register",`adding ${url} to the list of known services`);
     services.push({ host, port, path });
-    utils.log("Broadcast Register","------------------------------------< BROADCAST RECEIVED END >----------------------------------------\r\n");
+    utils.log("Broadcast Register","------------------------------------< BROADCAST REGISTER END >----------------------------------------\r\n");
     return `${host}:${port}${path} registered`;
 };

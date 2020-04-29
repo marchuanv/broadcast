@@ -8,7 +8,7 @@
     "npm": "6.13.4"
   },
   "scripts": {
-    "prestart": "npm update component && npm update component.secure && npm update messagebus",
+    "prestart": "npm cache clean --force",
     "start": "node broadcast.js"
   },
   "repository": {
