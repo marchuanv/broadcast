@@ -5,8 +5,8 @@ const port = process.env.PORT || 5000;
 const broadcastPath = "/broadcast";
 const registerPath = "/register";
 const contentType = "application/json";
-const username = "broadcast";
-const passphrase = "secure1";
+const username = process.env.USERNAME || "anonymous";
+const passphrase = process.env.PASSPHRASE || "secure1";
 let services = [];
 
 messagebus.subscribe( { host, port, path: broadcastPath, contentType }).callback = async({ path, contentType, content }) => {
