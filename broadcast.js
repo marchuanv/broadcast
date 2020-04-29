@@ -23,7 +23,6 @@ messagebus.subscribe( { host, port, path: broadcastPath, contentType }).callback
             content
         });
     };
-    return;
 };
 
 messagebus.subscribe( { host, port, path: registerPath, contentType }).callback = async({ host, port, path }) => {
@@ -34,5 +33,4 @@ messagebus.subscribe( { host, port, path: registerPath, contentType }).callback 
     const url = `${host}:${port}${path}`;
     utils.log("Broadcast Register",`adding ${url} to the list of known services`);
     services.push({ host, port, path });
-    return `${host}:${port}${path} registered`;
 };
