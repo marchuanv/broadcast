@@ -34,11 +34,13 @@ messagebus.subscribe( { sourcePublicHost, sourcePublicPort, sourcePrivatePort, p
         const url = `${service.host}:${service.port}${service.path}`;
         logging.write("Broadcast",`publishing message to ${url}`);
         await messagebus.publish({ 
-            publicHost: service.host, 
-            publicPort: service.port, 
-            path: service.path, 
             username, 
             passphrase, 
+            destPublicHost: service.host, 
+            destPublicPort: service.port,
+            sourcePublicHost, 
+            sourcePublicPort,
+            path: service.path, 
             contentType, 
             content
         });
