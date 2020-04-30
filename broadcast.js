@@ -47,9 +47,11 @@ messagebus.subscribe( { sourcePublicHost, sourcePublicPort, sourcePrivatePort, p
 
 messagebus.subscribe( { sourcePublicHost, sourcePublicPort, sourcePrivatePort, path: registerPath, contentType }).callback = async({ host, port, path }) => {
     if (host && port && path){
-        services =  services.filter(s => s.host !== host && s.port !== port && s.path !== path);
         const url = `${host}:${port}${path}`;
-        logging.write("Broadcast Register",`adding ${url} to the list of known services`);
+        services =  services.filter(s => s.host !== host && s.port !== port && s.path !== path);
+        logging.write("Broadcast Register",`${url} was registered`);
         services.push({ host, port, path });
+    } else {
+        logging.write("Broadcast Register",`failed to register remote publisher, invalid url: ${host}:${port}${path}`);
     }
 };
