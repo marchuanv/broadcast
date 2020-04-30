@@ -1,9 +1,9 @@
 const messagebus = require("messagebus");
 const utils = require("utils");
 
-const privatePort =  process.env.PORT || 5000;
+const privatePort =  Number(process.env.PORT || 5000);
 const publicHost = process.env.PUB_HOST || "localhost";
-const publicPort = process.env.PUB_PORT || privatePort;
+const publicPort = Number(process.env.PUB_PORT || privatePort);
 
 const broadcastPath = "/broadcast";
 const registerPath = "/register";
