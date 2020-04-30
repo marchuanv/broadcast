@@ -24,6 +24,7 @@ logging.config([
 ]);
 
 messagebus.subscribe( { sourcePublicHost, sourcePublicPort, sourcePrivatePort, path: broadcastPath, contentType }).callback = async({ path, contentType, content }, requesthost, requestport ) => {
+    logging.write("Broadcast",`publishing message from ${path} on behalf of ${requesthost}:${requestport} to all subscribers.`);
     for (const service of services.filter(s => s.path === path && s.host !== requesthost && s.port !== requestport )){
         const url = `${service.host}:${service.port}${service.path}`;
         logging.write("Broadcast",`publishing message to ${url}`);
@@ -40,11 +41,10 @@ messagebus.subscribe( { sourcePublicHost, sourcePublicPort, sourcePrivatePort, p
 };
 
 messagebus.subscribe( { sourcePublicHost, sourcePublicPort, sourcePrivatePort, path: registerPath, contentType }).callback = async({ host, port, path }) => {
-    if (!host || !port || !path){
-        utils.error("Broadcast Register", "failed to register request, host, port and path is not in the message.");
+    if (host && port && path){
+        services =  services.filter(s => s.host !== host && s.port !== port && s.path !== path);
+        const url = `${host}:${port}${path}`;
+        logging.write("Broadcast Register",`adding ${url} to the list of known services`);
+        services.push({ host, port, path });
     }
-    services =  services.filter(s => s.host !== host && s.port !== port && s.path !== path);
-    const url = `${host}:${port}${path}`;
-    logging.write("Broadcast Register",`adding ${url} to the list of known services`);
-    services.push({ host, port, path });
 };
