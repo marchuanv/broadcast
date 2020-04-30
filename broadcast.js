@@ -23,8 +23,8 @@ logging.config([
     "Component Secure Server"
 ]);
 
-messagebus.subscribe( { publicHost, publicPort, privatePort, path: broadcastPath, contentType }).callback = async({ path, contentType, content }) => {
-    for (const service of services.filter(s => s.path === path)){
+messagebus.subscribe( { publicHost, publicPort, privatePort, path: broadcastPath, contentType }).callback = async({ path, contentType, content }, requesthost, requestport ) => {
+    for (const service of services.filter(s => s.path === path && s.host !== requesthost && s.port !== requestport )){
         const url = `${service.host}:${service.port}${service.path}`;
         logging.write("Broadcast",`publishing message to ${url}`);
         await messagebus.publish({ 
