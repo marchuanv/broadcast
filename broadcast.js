@@ -1,7 +1,10 @@
 const messagebus = require("messagebus");
 const utils = require("utils");
-const host = process.env.HOST || "localhost";
-const port = process.env.PORT || 5000;
+
+const privatePort =  process.env.PORT || 5000;
+const publicHost = process.env.PUB_HOST || "localhost";
+const publicPort = process.env.PUB_PORT || privatePort;
+
 const broadcastPath = "/broadcast";
 const registerPath = "/register";
 const contentType = "application/json";
@@ -20,13 +23,13 @@ logging.config([
     "Component Secure Server"
 ]);
 
-messagebus.subscribe( { host, port, path: broadcastPath, contentType }).callback = async({ path, contentType, content }) => {
+messagebus.subscribe( { publicHost, publicPort, privatePort, path: broadcastPath, contentType }).callback = async({ path, contentType, content }) => {
     for (const service of services.filter(s => s.path === path)){
         const url = `${service.host}:${service.port}${service.path}`;
         logging.write("Broadcast",`publishing message to ${url}`);
         await messagebus.publish({ 
-            host: service.host, 
-            port: service.port, 
+            publicHost: service.host, 
+            publicPort: service.port, 
             path: service.path, 
             username, 
             passphrase, 
@@ -36,7 +39,7 @@ messagebus.subscribe( { host, port, path: broadcastPath, contentType }).callback
     };
 };
 
-messagebus.subscribe( { host, port, path: registerPath, contentType }).callback = async({ host, port, path }) => {
+messagebus.subscribe( { publicHost, publicPort, privatePort, path: registerPath, contentType }).callback = async({ host, port, path }) => {
     if (!host || !port || !path){
         utils.error("Broadcast Register", "failed to register request, host, port and path is not in the message.");
     }
