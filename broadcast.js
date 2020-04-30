@@ -9,10 +9,20 @@ const username = process.env.USERNAME || "anonymous";
 const passphrase = process.env.PASSPHRASE || "secure1";
 let services = [];
 
+const logging = require("logging");
+logging.config([
+    "Broadcast",
+    "MessageBus Publisher",
+    "MessageBus Subscriber",
+    "Component Client",
+    "Component Server",
+    "Component Secure"
+]);
+
 messagebus.subscribe( { host, port, path: broadcastPath, contentType }).callback = async({ path, contentType, content }) => {
     for (const service of services.filter(s => s.path === path)){
         const url = `${service.host}:${service.port}${service.path}`;
-        utils.log("Broadcast",`publishing message to ${url}`);
+        logging.write("Broadcast",`publishing message to ${url}`);
         await messagebus.publish({ 
             host: service.host, 
             port: service.port, 
@@ -31,6 +41,6 @@ messagebus.subscribe( { host, port, path: registerPath, contentType }).callback 
     }
     services =  services.filter(s => s.host !== host && s.port !== port && s.path !== path);
     const url = `${host}:${port}${path}`;
-    utils.log("Broadcast Register",`adding ${url} to the list of known services`);
+    logging.write("Broadcast Register",`adding ${url} to the list of known services`);
     services.push({ host, port, path });
 };
