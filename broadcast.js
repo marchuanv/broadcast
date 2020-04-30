@@ -26,7 +26,7 @@ logging.config([
 
 messagebus.subscribe( { sourcePublicHost, sourcePublicPort, sourcePrivatePort, path: broadcastPath, contentType }).callback = async({ path, contentType, content }, requesthost, requestport ) => {
     logging.write("Broadcast",`publishing message from ${path} on behalf of ${requesthost}:${requestport} to all subscribers.`);
-    const matchingServices = services.filter(s => s.path === path && s.host !== requesthost && s.port !== requestport );
+    const matchingServices = services.filter(s => `${s.host}:${s.port}${s.path}` !== `${requesthost}:${requestport}${path}` );
     if (matchingServices.length === 0){
         logging.write("Broadcast",`no ${path} subscribers.`);
         return;
@@ -51,7 +51,7 @@ messagebus.subscribe( { sourcePublicHost, sourcePublicPort, sourcePrivatePort, p
 messagebus.subscribe( { sourcePublicHost, sourcePublicPort, sourcePrivatePort, path: registerPath, contentType }).callback = async({ host, port, path }) => {
     if (host && port && path){
         const url = `${host}:${port}${path}`;
-        services =  services.filter(s => s.host !== host && s.port !== port && s.path !== path);
+        services =  services.filter(s => `${s.host}:${s.port}${s.path}` !== url );
         logging.write("Broadcast Register",`${url} was registered`);
         services.push({ host, port, path });
     } else {
