@@ -16,7 +16,8 @@ logging.config([
     "MessageBus Subscriber",
     "Component Client",
     "Component Server",
-    "Component Secure"
+    "Component Secure Client",
+    "Component Secure Server"
 ]);
 
 messagebus.subscribe( { host, port, path: broadcastPath, contentType }).callback = async({ path, contentType, content }) => {
