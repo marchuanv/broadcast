@@ -15,6 +15,7 @@ let services = [];
 const logging = require("logging");
 logging.config([
     "Broadcast",
+    "Broadcast Register",
     "MessageBus Publisher",
     "MessageBus Subscriber",
     "Component Client",
