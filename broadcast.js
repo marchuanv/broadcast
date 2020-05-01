@@ -7,9 +7,15 @@ const sourcePublicPort = Number(process.env.PUB_PORT || sourcePrivatePort);
 
 const broadcastPath = "/broadcast";
 const registerPath = "/register";
+
 const contentType = "application/json";
+
 const username = process.env.USERNAME || "anonymous";
 const passphrase = process.env.PASSPHRASE || "secure1";
+
+const isSecure = true;
+const isDeffered = true;
+
 let services = [];
 
 const logging = require("logging");
@@ -24,7 +30,7 @@ logging.config([
     "Component Secure Server"
 ]);
 
-messagebus.subscribe( { sourcePublicHost, sourcePublicPort, sourcePrivatePort, path: broadcastPath, contentType }).callback = async({ path, contentType, content }, requesthost, requestport ) => {
+const broadcast = ({  path, contentType, content }) => {
     logging.write("Broadcast",`publishing message from ${path} on behalf of ${requesthost}:${requestport} to all subscribers.`);
     const matchingServices = services.filter(s => `${s.host}:${s.port}${s.path}` !== `${requesthost}:${requestport}${path}` );
     if (matchingServices.length === 0){
@@ -48,7 +54,7 @@ messagebus.subscribe( { sourcePublicHost, sourcePublicPort, sourcePrivatePort, p
     };
 };
 
-messagebus.subscribe( { sourcePublicHost, sourcePublicPort, sourcePrivatePort, path: registerPath, contentType }).callback = async({ host, port, path }) => {
+const register = ({ host, port, path }) => {
     if (host && port && path){
         const url = `${host}:${port}${path}`;
         services =  services.filter(s => `${s.host}:${s.port}${s.path}` !== url );
@@ -58,3 +64,6 @@ messagebus.subscribe( { sourcePublicHost, sourcePublicPort, sourcePrivatePort, p
         logging.write("Broadcast Register",`failed to register remote publisher, invalid url: ${host}:${port}${path}`);
     }
 };
+
+messagebus.subscribe( { sourcePublicHost, sourcePublicPort, sourcePrivatePort, path: broadcastPath, contentType, isSecure, isDeffered }).callback = broadcast;
+messagebus.subscribe( { sourcePublicHost, sourcePublicPort, sourcePrivatePort, path: broadcastPath, contentType, isSecure, isDeffered }).callback = register;
